@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD完全ガイド - 小学生でもわかる設定手順</title>
+    
+    <!-- Mermaid.js の読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'base',
+                securityLevel: 'loose',
+                fontFamily: '"Hiragino Sans", "Yu Gothic", sans-serif',
+                themeVariables: {
+                    primaryColor: '#4CAF50',
+                    primaryTextColor: '#fff',
+                    primaryBorderColor: '#E91E63',
+                    lineColor: '#009688',
+                    secondaryColor: '#FFC107',
+                    tertiaryColor: '#9575CD'
+                },
+                flowchart: {
+                    cornerRadius: 15,
+                    curve: 'cardinal',
+                    htmlLabels: true
+                }
+            });
+        });
+    </script>
+    
+    <style>
+        :root {
+            --main-color: #4CAF50;
+            --accent-1: #9575CD;
+            --accent-2: #FFC107;
+            --accent-3: #009688;
+            --accent-4: #E91E63;
+            --bg-color: #FAFAFA;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #e8f5e8 100%);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            background: linear-gradient(135deg, var(--main-color), var(--accent-3));
+            color: white;
+            padding: 60px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 40px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            margin: 40px 0;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border-left: 6px solid var(--main-color);
+        }
+
+        .section h2 {
+            color: var(--main-color);
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h3 {
+            color: var(--accent-1);
+            font-size: 1.8rem;
+            margin: 30px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .card.traditional {
+            border-color: var(--accent-4);
+        }
+
+        .card.automated {
+            border-color: var(--main-color);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card.traditional h4 {
+            color: var(--accent-4);
+        }
+
+        .card.automated h4 {
+            color: var(--main-color);
+        }
+
+        .process-flow {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+        }
+
+        .step-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .step-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border-top: 4px solid var(--accent-2);
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: scale(1.02);
+        }
+
+        .step-number {
+            background: var(--accent-2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: "YAML";
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: var(--accent-2);
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .screenshot-guide {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+        }
+
+        .button-demo {
+            display: inline-block;
+            background: var(--main-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .button-demo:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .level-progression {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .level-card {
+            padding: 25px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-1 {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .level-50 {
+            background: linear-gradient(135deg, var(--accent-2), #f57f17);
+        }
+
+        .level-100 {
+            background: linear-gradient(135deg, var(--main-color), var(--accent-3));
+        }
+
+        .level-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .faq-item {
+            background: #f8f9fa;
+            margin: 15px 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .faq-question {
+            background: var(--accent-1);
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .faq-answer {
+            padding: 20px;
+            background: white;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .icon-robot::before {
+            content: "🤖";
+            font-size: 24px;
+        }
+
+        .icon-pizza::before {
+            content: "🍕";
+            font-size: 24px;
+        }
+
+        .icon-gear::before {
+            content: "⚙️";
+            font-size: 24px;
+        }
+
+        .icon-target::before {
+            content: "🎯";
+            font-size: 24px;
+        }
+
+        .icon-baby::before {
+            content: "👶";
+            font-size: 24px;
+        }
+
+        .icon-star::before {
+            content: "⭐";
+            font-size: 24px;
+        }
+
+        .icon-game::before {
+            content: "🎮";
+            font-size: 24px;
+        }
+
+        .icon-building::before {
+            content: "🏗️";
+            font-size: 24px;
+        }
+
+        .icon-bulb::before {
+            content: "💡";
+            font-size: 24px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border: 2px solid var(--main-color);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0, #ffcc02);
+            border: 2px solid var(--accent-2);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヒーローセクション -->
+        <div class="hero">
+            <h1><span class="icon-robot"></span>CI/CD完全マスターガイド</h1>
+            <p class="subtitle">小学生でもわかる！自動お助けロボットの設定から活用まで</p>
+        </div>
+
+        <!-- CI/CDとは -->
+        <div class="section">
+            <h2><span class="icon-pizza"></span>CI/CDを料理で例えると</h2>
+            
+            <div class="highlight-box">
+                <h3>🎯 結論：CI/CD = 自動料理ロボットレストラン</h3>
+                <p>CI/CDは、コード開発における「自動化システム」です。まるで料理を自動で作ってくれるロボットレストランのように、面倒な作業を全部自動でやってくれます！</p>
+            </div>
+
+            <h3>📍 背景：なぜ自動化が必要？</h3>
+            <p>従来の手作業では、ミスが多く、時間もかかり、品質もバラバラでした。自動化により、これらの問題を一気に解決できます。</p>
+
+            <div class="comparison-cards">
+                <div class="card traditional">
+                    <h4>🥵 従来（手作業）のレストラン</h4>
+                    <ul>
+                        <li>シェフが一人で注文を受ける</li>
+                        <li>材料をチェックして、料理して、盛り付けて</li>
+                        <li>味見して、お客さんに出して</li>
+                        <li>何か問題があったら最初からやり直し</li>
+                        <li><strong>1つの料理に1時間かかる！</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="card automated">
+                    <h4>🤖 CI/CD自動化レストラン</h4>
+                    <ul>
+                        <li>注文が入った瞬間、ロボットが動き出す</li>
+                        <li>材料チェックロボット → 調理ロボット → 盛り付けロボット → 配送ロボット</li>
+                        <li>各段階で自動チェック、問題があれば即座に修正</li>
+                        <li><strong>同じ料理が5分で完成！しかも品質が一定！</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="process-flow">
+                <h3>🍽️ 料理の自動化フロー</h3>
+                <div class="mermaid">
+                    graph TD
+                        A[🛒 注文受付] --> B[🤖 材料チェックロボット]
+                        B --> C[👨‍🍳 調理ロボット]
+                        C --> D[🍽️ 盛り付けロボット]
+                        D --> E[🚚 配送ロボット]
+                        E --> F[😋 お客様に提供]
+                        
+                        B --> G{❌ 材料不足？}
+                        G -->|Yes| H[📞 自動発注]
+                        H --> B
+                        G -->|No| C
+                        
+                        C --> I{🔥 味チェック}
+                        I -->|NG| J[⚙️ 自動調整]
+                        J --> C
+                        I -->|OK| D
+                        
+                        style A fill:#FFC107,stroke:#333,stroke-width:2px
+                        style F fill:#4CAF50,stroke:#333,stroke-width:2px
+                        style G fill:#E91E63,stroke:#333,stroke-width:2px
+                        style I fill:#E91E63,stroke:#333,stroke-width:2px
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>✨ 例え話の結論</h3>
+                <p>この料理レストランの例でわかるように、CI/CDは「人間の代わりに面倒な作業を自動でやってくれる仕組み」なのです！</p>
+            </div>
+        </div>
+
+        <!-- CIとCDの違い -->
+        <div class="section">
+            <h2><span class="icon-gear"></span>CIとCDの違いを詳しく解説</h2>
+            
+            <div class="comparison-cards">
+                <div class="card">
+                    <h4>🧪 CI (Continuous Integration)</h4>
+                    <h5>= 「品質管理ロボット」</h5>
+                    <p><strong>役割：</strong>コードをチェックして問題がないか確認</p>
+                    <p><strong>例え：</strong>工場の品質検査ライン</p>
+                    
+                    <div class="process-flow">
+                        <div class="mermaid">
+                            graph TD
+                                A[📝 コードを書く] --> B[📤 GitHubにプッシュ]
+                                B --> C[🤖 CI品質管理ロボット起動]
+                                C --> D[🔍 テスト実行]
+                                D --> E[✅ 動くかな？]
+                                D --> F[🐛 バグない？]
+                                D --> G[⚡ 速度OK？]
+                                E --> H{判定}
+                                F --> H
+                                G --> H
+                                H -->|✅ 合格| I[😊 太郎さん、完璧です！]
+                                H -->|❌ 不合格| J[⚠️ 太郎さん、ここにバグがありますよ！]
+                                
+                                style A fill:#FFC107,stroke:#333,stroke-width:2px
+                                style I fill:#4CAF50,stroke:#333,stroke-width:2px
+                                style J fill:#E91E63,stroke:#333,stroke-width:2px
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>🚀 CD (Continuous Deployment)</h4>
+                    <h5>= 「配達ロボット」</h5>
+                    <p><strong>役割：</strong>品質OKなコードを自動で本番環境に配送</p>
+                    <p><strong>例え：</strong>Amazonの自動配送システム</p>
+                    
+                    <div class="process-flow">
+                        <div class="mermaid">
+                            graph TD
+                                A[✅ CIで品質OK！] --> B[🤖 CD配達ロボット起動]
+                                B --> C[📦 デプロイ準備]
+                                C --> D[🏠 開発環境]
+                                C --> E[🏢 テスト環境]
+                                C --> F[🌍 本番環境]
+                                D --> G[👥 ユーザーが新機能を使える！]
+                                E --> G
+                                F --> G
+                                
+                                style A fill:#4CAF50,stroke:#333,stroke-width:2px
+                                style G fill:#9575CD,stroke:#333,stroke-width:2px
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ 重要なポイント</h3>
+                <p><strong>CI（品質管理）</strong>が成功しないと、<strong>CD（配達）</strong>は動きません。これにより、バグのあるコードが本番環境に行くことを防げます！</p>
+            </div>
+        </div>
+
+        <!-- 具体的な使い方パターン -->
+        <div class="section">
+            <h2><span class="icon-target"></span>具体的な使い方パターン</h2>
+            
+            <div class="step-cards">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>👤 個人プロジェクト</h4>
+                    <p><strong>使える場面：</strong></p>
+                    <ul>
+                        <li>ブログサイトを作っている</li>
+                        <li>ポートフォリオサイトを管理している</li>
+                    </ul>
+                    <p><strong>実際の流れ：</strong></p>
+                    <ol>
+                        <li>記事を書く（コードを書く）</li>
+                        <li>GitHubにプッシュ</li>
+                        <li>自動でサイトが更新される</li>
+                        <li>Twitter/Slackに「更新完了！」と通知</li>
+                    </ol>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>👥 チーム開発</h4>
+                    <p><strong>使える場面：</strong></p>
+                    <ul>
+                        <li>5人でWebアプリを作っている</li>
+                        <li>みんなが同じコードベースで作業</li>
+                    </ul>
+                    <p><strong>実際の流れ：</strong></p>
+                    <ol>
+                        <li>太郎がログイン機能を作る</li>
+                        <li>花子が決済機能を作る</li>
+                        <li>それぞれがプルリクエスト作成</li>
+                        <li>自動で「太郎のコードと花子のコード、一緒に動くかな？」テスト</li>
+                        <li>OKなら自動マージ→自動デプロイ</li>
+                    </ol>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>🏢 大企業のシステム</h4>
+                    <p><strong>使える場面：</strong></p>
+                    <ul>
+                        <li>銀行のシステム</li>
+                        <li>ECサイトのシステム</li>
+                    </ul>
+                    <p><strong>実際の流れ：</strong></p>
+                    <ol>
+                        <li>開発者が機能追加</li>
+                        <li>自動テスト（100個以上のテストが数分で完了）</li>
+                        <li>セキュリティチェック</li>
+                        <li>段階的デプロイ（10%のユーザー→50%→100%）</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="process-flow">
+                <h3>🔄 チーム開発のCI/CDフロー</h3>
+                <div class="mermaid">
+                    graph TD
+                        A[👨‍💻 太郎：ログイン機能] --> B[📝 プルリクエスト作成]
+                        C[👩‍💻 花子：決済機能] --> D[📝 プルリクエスト作成]
+                        
+                        B --> E[🤖 CI: 自動テスト実行]
+                        D --> E
+                        
+                        E --> F{🔍 コードの競合チェック}
+                        F -->|✅ OK| G[🔗 自動マージ]
+                        F -->|❌ 競合| H[⚠️ 競合解決が必要]
+                        
+                        G --> I[🚀 CD: 自動デプロイ]
+                        I --> J[🌍 本番環境更新]
+                        J --> K[📱 ユーザーに新機能提供]
+                        
+                        style A fill:#FFC107,stroke:#333,stroke-width:2px
+                        style C fill:#FFC107,stroke:#333,stroke-width:2px
+                        style K fill:#4CAF50,stroke:#333,stroke-width:2px
+                        style H fill:#E91E63,stroke:#333,stroke-width:2px
+                </div>
+            </div>
+        </div>
+
+        <!-- 詳細な設定手順 -->
+        <div class="section">
+            <h2><span class="icon-baby"></span>小学生でもわかる！超詳細設定手順</h2>
+            
+            <div class="warning-box">
+                <h3>🎯 この手順で達成できること</h3>
+                <p>GitHub Actionsを使って、コードをプッシュするたびに自動でテストが実行される仕組みを作ります！</p>
+            </div>
+
+            <div class="screenshot-guide">
+                <h3>📋 事前準備（必要なもの）</h3>
+                <ul>
+                    <li>✅ GitHubアカウント（無料で作成可能）</li>
+                    <li>✅ インターネットに接続できるパソコン</li>
+                    <li>✅ ブラウザ（Chrome、Safari、Firefoxなど）</li>
+                    <li>✅ やる気（一番重要！）</li>
+                </ul>
+            </div>
+
+            <div class="step-cards">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>🌐 GitHubのページを開く</h4>
+                    <div class="highlight-box">
+                        <p><strong>詳細手順：</strong></p>
+                        <ol>
+                            <li>ブラウザを開いて、アドレス欄に「github.com」と入力</li>
+                            <li>Enterキーを押す</li>
+                            <li>GitHubにログイン（まだアカウントがない場合は「Sign up」から作成）</li>
+                            <li>ログイン後、画面上部の「Repositories」をクリック</li>
+                            <li>あなたのプロジェクト名をクリック（例：「my-website」など）</li>
+                        </ol>
+                    </div>
+                    <p><strong>💡 ワンポイント：</strong>プロジェクトがない場合は、「New」ボタンから新しいリポジトリを作成しましょう！</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>⚙️ Actionsタブをクリック</h4>
+                    <div class="highlight-box">
+                        <p><strong>詳細手順：</strong></p>
+                        <ol>
+                            <li>プロジェクトのページで、画面上部を見る</li>
+                            <li>「Code」「Issues」「Pull requests」の右側にある「Actions」をクリック</li>
+                            <li>初回の場合、「Get started with GitHub Actions」というページが表示される</li>
+                        </ol>
+                    </div>
+                    <a href="#" class="button-demo">Actions</a>
+                    <p><strong>👀 見た目：</strong>上のような緑色のボタンです！</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>📝 ワークフローを作成</h4>
+                    <div class="highlight-box">
+                        <p><strong>詳細手順：</strong></p>
+                        <ol>
+                            <li>「New workflow」ボタンをクリック（画面中央付近にある緑色のボタン）</li>
+                            <li>たくさんのテンプレートが表示される</li>
+                            <li>「Simple workflow」または「Blank workflow」を探す</li>
+                            <li>「Configure」ボタンをクリック</li>
+                            <li>エディター画面が開く</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h4>💻 設定ファイルを書く</h4>
+                    <p><strong>下のコードをそのままコピー＆ペーストしてください：</strong></p>
+                    
+                    <div class="code-block">
+# 🤖 自動お助けロボットの設定ファイル
+name: 自動お助けロボット
+
+# いつ動くか：コードをプッシュしたとき
+on: [push, pull_request]
+
+# 何をするか
+jobs:
+  テスト実行:
+    # どのOSで動かすか
+    runs-on: ubuntu-latest
+    
+    # 実行する手順
+    steps:
+    # ステップ1: コードをダウンロード
+    - name: 📥 コードをダウンロード
+      uses: actions/checkout@v4
+      
+    # ステップ2: Node.jsの準備（Webアプリの場合）
+    - name: 🟢 Node.jsの準備
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    # ステップ3: 依存関係をインストール
+    - name: 📦 必要なパッケージをインストール
+      run: npm install
+      
+    # ステップ4: テストを実行
+    - name: 🧪 テストを実行
+      run: npm test
+      
+    # ステップ5: 成功したら通知
+    - name: 🎉 成功メッセージ
+      run: echo "✅ テストが成功しました！お疲れ様でした！"
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h4>⚠️ 重要な注意点</h4>
+                        <ul>
+                            <li>既存のコードは全部削除して、上のコードを貼り付けてください</li>
+                            <li>インデント（空白）がとても重要です！コピペすれば自動で正しくなります</li>
+                            <li>プロジェクトの種類によって、設定は変わります（今回はNode.js用）</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h4>💾 保存する</h4>
+                    <div class="highlight-box">
+                        <p><strong>詳細手順：</strong></p>
+                        <ol>
+                            <li>画面右上の「Commit changes...」ボタンをクリック</li>
+                            <li>ポップアップが表示される</li>
+                            <li>「Commit message」に「CI/CD設定を追加」と入力</li>
+                            <li>「Commit changes」ボタンをクリック</li>
+                            <li>完了！ファイルが保存される</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <h4>✅ 動作確認</h4>
+                    <div class="highlight-box">
+                        <p><strong>詳細手順：</strong></p>
+                        <ol>
+                            <li>何でもいいので、ファイルを少し編集する（例：README.mdに一行追加）</li>
+                            <li>変更をコミット＆プッシュ</li>
+                            <li>「Actions」タブに戻る</li>
+                            <li>実行中のワークフローが表示される（オレンジ色の丸）</li>
+                            <li>完了すると緑色のチェックマーク✅が表示される</li>
+                            <li>赤い❌が表示されたら、エラーがあるので内容を確認</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="process-flow">
+                <h3>🔄 設定完了後の自動化フロー</h3>
+                <div class="mermaid">
+                    graph TD
+                        A[📝 コードを編集] --> B[💾 GitHubにプッシュ]
+                        B --> C[🤖 GitHub Actions起動]
+                        C --> D[📥 コードダウンロード]
+                        D --> E[🟢 Node.js準備]
+                        E --> F[📦 パッケージインストール]
+                        F --> G[🧪 テスト実行]
+                        G --> H{テスト結果}
+                        H -->|✅ 成功| I[🎉 成功通知]
+                        H -->|❌ 失敗| J[⚠️ エラー通知]
+                        I --> K[😊 開発者: 安心して続行]
+                        J --> L[🔧 開発者: 修正が必要]
+                        
+                        style A fill:#FFC107,stroke:#333,stroke-width:2px
+                        style I fill:#4CAF50,stroke:#333,stroke-width:2px
+                        style J fill:#E91E63,stroke:#333,stroke-width:2px
+                        style K fill:#4CAF50,stroke:#333,stroke-width:2px
+                        style L fill:#E91E63,stroke:#333,stroke-width:2px
+                </div>
+            </div>
+        </div>
+
+        <!-- ゲーム感覚での理解 -->
+        <div class="section">
+            <h2><span class="icon-game"></span>ゲーム感覚で理解するCI/CD</h2>
+            
+            <div class="highlight-box">
+                <h3>🎮 RPGのレベルアップシステムだと思って！</h3>
+                <p>CI/CDの導入は、ゲームでレベルアップするのと同じです。レベルが上がるほど、強くて効率的になります！</p>
+            </div>
+
+            <div class="level-progression">
+                <div class="level-card level-1">
+                    <h3>⚔️ レベル1：手動戦士</h3>
+                    <div style="font-size: 2rem; margin: 20px 0;">😰</div>
+                    <p><strong>攻撃力：</strong> 10</p>
+                    <p><strong>作業：</strong> 全部手動でやる</p>
+                    <p><strong>リスク：</strong> ミスが多い</p>
+                    <p><strong>時間：</strong> めちゃくちゃかかる</p>
+                    <p><strong>特徴：</strong> 夜遅くまで作業、週末もデプロイ作業</p>
+                </div>
+                
+                <div class="level-card level-50">
+                    <h3>🧙‍♂️ レベル50：CI導入魔法使い</h3>
+                    <div style="font-size: 2rem; margin: 20px 0;">😊</div>
+                    <p><strong>攻撃力：</strong> 100</p>
+                    <p><strong>作業：</strong> テストは自動</p>
+                    <p><strong>リスク：</strong> デプロイでたまにミス</p>
+                    <p><strong>時間：</strong> 半分に短縮</p>
+                    <p><strong>特徴：</strong> バグの発見が早い、でもまだ手動デプロイ</p>
+                </div>
+                
+                <div class="level-card level-100">
+                    <h3>🦸‍♂️ レベル100：CD完全自動勇者</h3>
+                    <div style="font-size: 2rem; margin: 20px 0;">🚀</div>
+                    <p><strong>攻撃力：</strong> 1000</p>
+                    <p><strong>作業：</strong> 全部自動</p>
+                    <p><strong>リスク：</strong> ほぼゼロ</p>
+                    <p><strong>時間：</strong> 10分の1に短縮</p>
+                    <p><strong>特徴：</strong> 安心して眠れる、週末も安心</p>
+                </div>
+            </div>
+
+            <div class="process-flow">
+                <h3>📈 レベルアップの進化過程</h3>
+                <div class="mermaid">
+                    graph LR
+                        A[😰 レベル1<br/>手動戦士] --> B[🧙‍♂️ レベル50<br/>CI魔法使い]
+                        B --> C[🦸‍♂️ レベル100<br/>CD勇者]
+                        
+                        A -.-> A1[💀 深夜作業<br/>🐛 バグ多発<br/>😱 本番障害]
+                        B -.-> B1[⚡ 自動テスト<br/>🔍 早期発見<br/>😌 安定感UP]
+                        C -.-> C1[🚀 完全自動<br/>✨ 高品質<br/>😴 安眠]
+                        
+                        style A fill:#f44336,stroke:#333,stroke-width:3px
+                        style B fill:#FFC107,stroke:#333,stroke-width:3px
+                        style C fill:#4CAF50,stroke:#333,stroke-width:3px
+                </div>
+            </div>
+        </div>
+
+        <!-- よくある質問 -->
+        <div class="section">
+            <h2><span class="icon-bulb"></span>よくある質問と答え</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    Q: 設定が難しそう...
+                </div>
+                <div class="faq-answer">
+                    <strong>A:</strong> 最初は簡単なテンプレートから始めて、少しずつ改良していけばOK！今回の手順通りにやれば、30分程度で基本的な設定ができます。
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    Q: お金かかる？
+                </div>
+                <div class="faq-answer">
+                    <strong>A:</strong> GitHub Actionsなら、個人プロジェクトは月2,000分まで無料！普通の使い方なら十分です。
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    Q: 失敗したらどうする？
+                </div>
+                <div class="faq-answer">
+                    <strong>A:</strong> 自動で元に戻す機能（ロールバック）もあるから安心！失敗は学習のチャンス。エラーメッセージを読んで、一つずつ解決していきましょう。
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    Q: チームメンバーが反対したら？
+                </div>
+                <div class="faq-answer">
+                    <strong>A:</strong> 小さいプロジェクトで効果を実証してから提案！数字で効果を示せば、きっと理解してもらえます。
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    Q: エラーが出て動かない...
+                </div>
+                <div class="faq-answer">
+                    <strong>A:</strong> よくあること！Actionsタブでエラーログを確認し、Google先生に聞いてみましょう。90%の問題は誰かが既に解決済みです。
+                </div>
+            </div>
+        </div>
+
+        <!-- 最後のまとめ -->
+        <div class="section">
+            <h2>🎯 まとめ：CI/CDで開発者人生が変わる！</h2>
+            
+            <div class="highlight-box">
+                <h3>✨ CI/CD導入後のあなた</h3>
+                <ul>
+                    <li>🌙 <strong>安心して眠れる：</strong> 自動テストがバグを見つけてくれる</li>
+                    <li>🎉 <strong>週末を楽しめる：</strong> 自動デプロイで緊急対応が激減</li>
+                    <li>💪 <strong>集中して開発：</strong> 面倒な作業はロボットにお任せ</li>
+                    <li>🚀 <strong>高品質なコード：</strong> 一定の品質が自動で保たれる</li>
+                    <li>⚡ <strong>爆速リリース：</strong> 機能追加から公開まで数分</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>🔥 今すぐ始めよう！</h3>
+                <p>CI/CDは最初は複雑に見えるけど、一度設定してしまえば「なんでもっと早く使わなかったんだろう！」って思うほど便利です。</p>
+                <p><strong>明日から、いや今すぐ始めて、自動化の魔法を体験してみてください！</strong></p>
+            </div>
+
+            <div class="process-flow">
+                <h3>🌟 あなたの次のステップ</h3>
+                <div class="mermaid">
+                    graph TD
+                        A[📖 このガイドを読む] --> B[💻 GitHub Actionsを設定]
+                        B --> C[🧪 簡単なテストを追加]
+                        C --> D[🚀 自動デプロイを追加]
+                        D --> E[🎊 CI/CDマスター誕生！]
+                        
+                        style A fill:#FFC107,stroke:#333,stroke-width:2px
+                        style E fill:#4CAF50,stroke:#333,stroke-width:2px
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

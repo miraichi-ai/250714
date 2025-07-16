@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Actions 超わかりやすい図解ガイド</title>
+    
+    <!-- Mermaid.js の読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'base',
+                securityLevel: 'loose',
+                fontFamily: '"Kaisei Decol", sans-serif',
+                themeVariables: {
+                    primaryColor: '#4CAF50',
+                    primaryTextColor: '#fff',
+                    primaryBorderColor: '#9575CD',
+                    lineColor: '#009688',
+                    secondaryColor: '#FFC107',
+                    tertiaryColor: '#E91E63'
+                },
+                flowchart: {
+                    cornerRadius: 15,
+                    curve: 'cardinal',
+                    htmlLabels: true
+                }
+            });
+        });
+    </script>
+    
+    <style>
+        :root {
+            --main-color: #4CAF50;
+            --accent-1: #9575CD;
+            --accent-2: #FFC107;
+            --accent-3: #009688;
+            --accent-4: #E91E63;
+            --bg-color: #FAFAFA;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            background: var(--bg-color);
+            color: #333;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--main-color), var(--accent-3));
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(76, 175, 80, 0.3);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            background: white;
+            margin: 40px 0;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 6px solid var(--main-color);
+        }
+        
+        .section h2 {
+            color: var(--main-color);
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section h3 {
+            color: var(--accent-1);
+            font-size: 1.8rem;
+            margin: 30px 0 20px 0;
+            padding-left: 20px;
+            border-left: 4px solid var(--accent-2);
+        }
+        
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .step-card {
+            background: linear-gradient(145deg, #fff, #f8f9fa);
+            border: 2px solid var(--accent-2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--accent-2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .pattern-card {
+            background: white;
+            border: 3px solid var(--accent-3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 150, 136, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .pattern-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pattern-card .emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .code-box {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 5px solid var(--accent-4);
+            position: relative;
+        }
+        
+        .code-box::before {
+            content: "YAML設定ファイル";
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: var(--accent-4);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid var(--accent-2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .warning-box::before {
+            content: "⚠️";
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 2px solid var(--main-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .success-box::before {
+            content: "✅";
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .flow-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: var(--main-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .comparison-table td {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--bg-color);
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .button-style {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-4));
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(149, 117, 205, 0.3);
+        }
+        
+        .button-style:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(149, 117, 205, 0.4);
+        }
+        
+        .visual-step {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, white);
+            border-radius: 15px;
+            border: 2px dashed var(--accent-3);
+        }
+        
+        .visual-step .step-icon {
+            background: var(--accent-3);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 25px;
+            flex-shrink: 0;
+        }
+        
+        .roadmap {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .roadmap-item {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .roadmap-item::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--main-color);
+        }
+        
+        .beginner { border-top: 5px solid var(--main-color); }
+        .intermediate { border-top: 5px solid var(--accent-2); }
+        .advanced { border-top: 5px solid var(--accent-4); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヒーローセクション -->
+        <div class="hero">
+            <h1>🤖 GitHub Actions</h1>
+            <p class="subtitle">小学生でもわかる！自動化の魔法</p>
+        </div>
+
+        <!-- GitHub Actionsとは何か -->
+        <div class="section">
+            <h2><span class="icon">🎯</span>GitHub Actionsって何？</h2>
+            
+            <div class="success-box">
+                <strong>結論：</strong> あなたがコードを変更したら、自動で色々なことをやってくれる「ロボット」です！
+            </div>
+            
+            <h3>📖 背景</h3>
+            <p>昔は、プログラマーがコードを書いた後、手動でテストしたり、サーバーにアップロードしたりする必要がありました。これはとても時間がかかって、ミスも起こりやすい作業でした。</p>
+            
+            <h3>🏠 身近な例え話</h3>
+            <p><strong>GitHub Actions = 超優秀な家事ロボット</strong></p>
+            
+            <div class="flow-diagram">
+                <div class="mermaid">
+                    graph LR
+                        A[👤 あなた: 洗濯物を入れる] --> B[🤖 ロボット: 自動で洗濯]
+                        B --> C[🤖 ロボット: 自動で乾燥]
+                        C --> D[🤖 ロボット: 自動で畳む]
+                        D --> E[🤖 ロボット: タンスに収納]
+                        E --> F[✅ 完了通知]
+                        
+                        style A fill:#4CAF50,stroke:#333,color:#fff
+                        style F fill:#9575CD,stroke:#333,color:#fff
+                        style B fill:#FFC107,stroke:#333
+                        style C fill:#FFC107,stroke:#333
+                        style D fill:#FFC107,stroke:#333
+                        style E fill:#FFC107,stroke:#333
+                </div>
+            </div>
+            
+            <h3>💡 具体例：3つの基本パターン</h3>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <span class="emoji">🧪</span>
+                    <h4>パターン1: 自動テスト</h4>
+                    <p><strong>あなた：</strong> コードを変更<br>
+                    <strong>ロボット：</strong> 「問題ないかテストするね！」<br>
+                    <strong>結果：</strong> 緑色のマーク ✅ or 赤色の警告 ❌</p>
+                </div>
+                
+                <div class="pattern-card">
+                    <span class="emoji">🚀</span>
+                    <h4>パターン2: 自動デプロイ</h4>
+                    <p><strong>あなた：</strong> 「このバージョンで公開！」<br>
+                    <strong>ロボット：</strong> 「Webサイトに反映するね！」<br>
+                    <strong>結果：</strong> 手作業なしでサイトが更新</p>
+                </div>
+                
+                <div class="pattern-card">
+                    <span class="emoji">⏰</span>
+                    <h4>パターン3: 定期作業</h4>
+                    <p><strong>ロボット：</strong> 毎日決まった時間にチェック<br>
+                    <strong>結果：</strong> セキュリティ更新があれば自動通知</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用場面 -->
+        <div class="section">
+            <h2><span class="icon">🏗️</span>どんな場面で使える？</h2>
+            
+            <h3>💻 個人での使い方</h3>
+            
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h4>📝 個人ブログの運営</h4>
+                <p><strong>状況：</strong> Hugo、Jekyll、Astroなどでブログを作っている</p>
+                <div class="flow-diagram">
+                    <div class="mermaid">
+                        graph TD
+                            A[📝 記事を書く] --> B[📤 GitHubにアップロード]
+                            B --> C[🤖 自動でビルド]
+                            C --> D[🌐 Webサイトに公開]
+                            
+                            style A fill:#4CAF50,stroke:#333,color:#fff
+                            style D fill:#9575CD,stroke:#333,color:#fff
+                    </div>
+                </div>
+                <div class="success-box">
+                    <strong>メリット：</strong> FTPアップロードなどの面倒な作業が不要！
+                </div>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h4>📱 個人アプリ開発</h4>
+                <p><strong>状況：</strong> ReactやVue.jsでアプリを作っている</p>
+                <div class="flow-diagram">
+                    <div class="mermaid">
+                        graph TD
+                            A[💻 コードを変更] --> B[🧪 自動テスト]
+                            B --> C{テスト結果}
+                            C -->|✅ OK| D[🚀 Vercel/Netlifyにデプロイ]
+                            C -->|❌ NG| E[🚨 エラー通知]
+                            
+                            style A fill:#4CAF50,stroke:#333,color:#fff
+                            style D fill:#009688,stroke:#333,color:#fff
+                            style E fill:#E91E63,stroke:#333,color:#fff
+                    </div>
+                </div>
+                <div class="success-box">
+                    <strong>メリット：</strong> バグのあるコードが本番環境に行くのを防げる！
+                </div>
+            </div>
+            
+            <h3>🏢 チーム・企業での使い方</h3>
+            
+            <div class="comparison-table">
+                <tr>
+                    <th>従来の手作業</th>
+                    <th>GitHub Actions</th>
+                </tr>
+                <tr>
+                    <td>
+                        ⏰ コードを書く (30分)<br>
+                        ⏰ 手動でテスト (10分)<br>
+                        ⏰ 手動でアップロード (5分)<br>
+                        ⏰ 設定ファイル更新 (5分)<br>
+                        ⏰ 動作確認 (10分)<br>
+                        <strong>合計: 1時間</strong>
+                    </td>
+                    <td>
+                        ⏰ コードを書く (30分)<br>
+                        ⏰ GitHubにpush (1分)<br>
+                        🤖 後は全部自動 (5分)<br>
+                        📱 結果をSlackで通知<br>
+                        <strong>合計: 31分（しかも自動）</strong>
+                    </td>
+                </tr>
+            </div>
+        </div>
+
+        <!-- 実際の設定手順 -->
+        <div class="section">
+            <h2><span class="icon">📝</span>実際の設定手順（小学生レベル）</h2>
+            
+            <div class="warning-box">
+                <strong>大切：</strong> この手順は画面の写真を見ながら、一つずつ真似してください。焦らなくて大丈夫です！
+            </div>
+            
+            <div class="visual-step">
+                <div class="step-icon">1</div>
+                <div>
+                    <h4>GitHubリポジトリを用意</h4>
+                    <p><strong>具体的な操作：</strong></p>
+                    <ul>
+                        <li>ブラウザで <code>https://github.com</code> にアクセス</li>
+                        <li>画面の<strong>右上</strong>にある <strong>「+」ボタン</strong> をクリック</li>
+                        <li><strong>「New repository」</strong> をクリック</li>
+                        <li>名前を入力：例）<code>my-test-project</code></li>
+                        <li><strong>緑色の「Create repository」ボタン</strong> をクリック</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="visual-step">
+                <div class="step-icon">2</div>
+                <div>
+                    <h4>Actions用のフォルダを作成</h4>
+                    <p><strong>具体的な操作：</strong></p>
+                    <ul>
+                        <li>リポジトリ画面で<strong>「Add file」</strong>ボタンをクリック（右側の緑色ボタンの近く）</li>
+                        <li><strong>「Create new file」</strong>を選択</li>
+                        <li>ファイル名に以下をコピペ：<code>.github/workflows/test.yml</code></li>
+                        <li>※ スラッシュ（/）を入力すると自動でフォルダが作られます</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="visual-step">
+                <div class="step-icon">3</div>
+                <div>
+                    <h4>設定ファイルの内容をコピペ</h4>
+                    <p><strong>初心者向け：</strong> まずは以下の内容をそのままコピペしてください</p>
+                    
+                    <div class="code-box">
+name: 基本的なテスト
+on:
+  push:    # コードをアップロードした時
+  pull_request:  # プルリクエストを作った時
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Linuxサーバーを使用
+    steps:
+      - name: コードをダウンロード
+        uses: actions/checkout@v4
+        
+      - name: Node.jsをセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: パッケージをインストール
+        run: npm install
+        
+      - name: テストを実行
+        run: npm test
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visual-step">
+                <div class="step-icon">4</div>
+                <div>
+                    <h4>ファイルを保存</h4>
+                    <p><strong>具体的な操作：</strong></p>
+                    <ul>
+                        <li>画面を<strong>下にスクロール</strong></li>
+                        <li><strong>「Commit changes」</strong>という緑色のボタンを探す</li>
+                        <li>コミットメッセージ欄に「GitHub Actionsを追加」と入力</li>
+                        <li><strong>「Commit changes」ボタン</strong>をクリック</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="visual-step">
+                <div class="step-icon">5</div>
+                <div>
+                    <h4>動作確認</h4>
+                    <p><strong>具体的な操作：</strong></p>
+                    <ul>
+                        <li>リポジトリ画面の<strong>上部</strong>にある<strong>「Actions」タブ</strong>をクリック</li>
+                        <li>ワークフローの実行状況を確認：</li>
+                        <ul>
+                            <li>🟡 黄色の丸：実行中</li>
+                            <li>✅ 緑色のチェック：成功</li>
+                            <li>❌ 赤色のX：失敗</li>
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- よくある設定パターン -->
+        <div class="section">
+            <h2><span class="icon">🔧</span>よく使う設定パターン</h2>
+            
+            <h3>📅 毎日決まった時間に実行</h3>
+            <p><strong>使用例：</strong> 株価データを毎日自動で取得したい</p>
+            
+            <div class="code-box">
+name: 定期データ取得
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 毎日午前9時（UTC）
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: データを取得
+        run: |
+          curl "https://api.example.com/data" > data.json
+          git add data.json
+          git commit -m "データ更新: $(date)"
+          git push
+            </div>
+            
+            <div class="flow-diagram">
+                <div class="mermaid">
+                    graph LR
+                        A[⏰ 毎日9時] --> B[🌐 APIからデータ取得]
+                        B --> C[💾 ファイルに保存]
+                        C --> D[📤 GitHubに自動コミット]
+                        
+                        style A fill:#FFC107,stroke:#333
+                        style D fill:#4CAF50,stroke:#333,color:#fff
+                </div>
+            </div>
+            
+            <h3>🌐 複数のバージョンでテスト</h3>
+            <p><strong>使用例：</strong> Node.js の複数バージョンで動作確認したい</p>
+            
+            <div class="code-box">
+name: マルチ環境テスト
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]  # 複数バージョンでテスト
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+            </div>
+        </div>
+
+        <!-- トラブルシューティング -->
+        <div class="section">
+            <h2><span class="icon">⚡</span>トラブルシューティング</h2>
+            
+            <h3>🔴 よくあるエラーと対処法</h3>
+            
+            <div class="step-card">
+                <div class="step-number">❌</div>
+                <h4>エラー: npm: command not found</h4>
+                <p><strong>原因：</strong> Node.jsがセットアップされていない</p>
+                <p><strong>解決法：</strong> setup-nodeアクションを追加</p>
+                <div class="code-box">
+- uses: actions/setup-node@v4
+  with:
+    node-version: '18'
+                </div>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">❌</div>
+                <h4>エラー: Permission denied</h4>
+                <p><strong>原因：</strong> ファイルの権限不足</p>
+                <p><strong>解決法：</strong> 実行権限を付与</p>
+                <div class="code-box">
+- name: スクリプトに実行権限を付与
+  run: chmod +x ./scripts/deploy.sh
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <strong>デバッグのコツ：</strong> エラーが出たら、Actionsタブでログを詳しく見てください。どこで失敗したかが分かります！
+            </div>
+        </div>
+
+        <!-- 学習ロードマップ -->
+        <div class="section">
+            <h2><span class="icon">🎓</span>段階的な学習ロードマップ</h2>
+            
+            <div class="roadmap">
+                <div class="roadmap-item beginner">
+                    <h3>🔰 初級</h3>
+                    <h4>（まずはここから）</h4>
+                    <ul>
+                        <li>✅ 基本的な自動テストを設定</li>
+                        <li>✅ push時にテストが動くことを確認</li>
+                        <li>✅ Actionsタブでログを見る習慣</li>
+                    </ul>
+                    <p><strong>目安期間：</strong> 1週間</p>
+                </div>
+                
+                <div class="roadmap-item intermediate">
+                    <h3>🚀 中級</h3>
+                    <h4>（慣れてきたら）</h4>
+                    <ul>
+                        <li>✅ 複数のjobを並列実行</li>
+                        <li>✅ 環境変数とシークレットを使用</li>
+                        <li>✅ 条件付き実行を活用</li>
+                    </ul>
+                    <p><strong>目安期間：</strong> 2-3週間</p>
+                </div>
+                
+                <div class="roadmap-item advanced">
+                    <h3>🎯 上級</h3>
+                    <h4>（余裕が出てきたら）</h4>
+                    <ul>
+                        <li>✅ カスタムアクションを作成</li>
+                        <li>✅ マトリックス戦略で複数環境テスト</li>
+                        <li>✅ 他のサービスとの連携</li>
+                    </ul>
+                    <p><strong>目安期間：</strong> 1ヶ月以上</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 今すぐ試せる例 -->
+        <div class="section">
+            <h2><span class="icon">💡</span>今すぐ試せる簡単な例</h2>
+            
+            <div class="success-box">
+                <strong>最初の一歩：</strong> この内容をコピペするだけで動きます！
+            </div>
+            
+            <div class="code-box">
+name: Hello World
+on: [push]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello を出力
+        run: echo "Hello, GitHub Actions!"
+        
+      - name: 現在時刻を表示
+        run: date
+        
+      - name: ファイル一覧を表示
+        run: ls -la
+            </div>
+            
+            <p><strong>保存場所：</strong> <code>.github/workflows/hello.yml</code></p>
+            <p><strong>結果：</strong> pushするたびに挨拶メッセージとファイル一覧が表示されます</p>
+            
+            <div class="flow-diagram">
+                <div class="mermaid">
+                    graph TD
+                        A[📤 コードをpush] --> B[🤖 GitHub Actionsが起動]
+                        B --> C[💬 Hello, GitHub Actions!]
+                        B --> D[🕐 現在時刻を表示]
+                        B --> E[📁 ファイル一覧を表示]
+                        C --> F[✅ 完了！]
+                        D --> F
+                        E --> F
+                        
+                        style A fill:#4CAF50,stroke:#333,color:#fff
+                        style F fill:#9575CD,stroke:#333,color:#fff
+                </div>
+            </div>
+            
+            <div class="success-box">
+                これで、GitHub Actionsの「魔法」の正体がわかったはず！最初は小さく始めて、徐々に複雑なことに挑戦していきましょう。 🎉
+            </div>
+        </div>
+    </div>
+</body>
+</html>

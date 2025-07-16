@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git&GitHub完全攻略セミナー - 黒い画面が怖くなくなる実践的学習</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        mermaid.initialize({
+          startOnLoad: true,
+          theme: 'base',
+          securityLevel: 'loose',
+          fontFamily: 'sans-serif',
+          themeVariables: {
+            primaryColor: '#4CAF50',
+            primaryTextColor: '#333',
+            primaryBorderColor: '#9575CD',
+            lineColor: '#009688',
+            secondaryColor: '#FFC107',
+            tertiaryColor: '#f0f0f0'
+          },
+          flowchart: {
+            curve: 'basis'
+          }
+        });
+      });
+    </script>
+    <style>
+        :root {
+          --main-color: #4CAF50;
+          --accent-color-1: #9575CD;
+          --accent-color-2: #FFC107;
+          --accent-color-3: #009688;
+          --accent-color-4: #E91E63;
+          --background-color: #FAFAFA;
+          --text-color: #333;
+          --light-text-color: #FFF;
+          --border-color: #E0E0E0;
+        }
+        body {
+          font-family: sans-serif;
+          background-color: var(--background-color);
+          color: var(--text-color);
+          line-height: 1.6;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 900px;
+          margin: 20px auto;
+          padding: 20px;
+          background-color: #fff;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          border-radius: 8px;
+        }
+        h1, h2, h3, h4 { color: var(--main-color); margin-bottom: 0.8em; }
+        h1 { font-size: 2.2em; text-align: center; border-bottom: 2px solid var(--accent-color-2); padding-bottom: 10px; }
+        h2 { font-size: 1.8em; color: var(--accent-color-3); border-left: 5px solid var(--accent-color-3); padding-left: 10px; margin-top: 2em;}
+        h3 { font-size: 1.4em; color: var(--accent-color-1); margin-top: 1.5em; }
+        strong { color: var(--accent-color-4); }
+        ul, ol { padding-left: 25px; }
+        li { margin-bottom: 0.5em; }
+        p { margin-bottom: 1em; }
+        .hero-section {
+            background: linear-gradient(135deg, var(--main-color), var(--accent-color-3));
+            color: var(--text-color);
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .hero-section h1 { color: var(--text-color); border-bottom: none; }
+        .hero-section p { font-size: 1.1em; }
+        .benefits-section ul li::before {
+            content: '✅ ';
+            color: var(--main-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        .process-section ol {
+          list-style: none;
+          counter-reset: step-counter;
+          padding-left: 0;
+        }
+        .process-section li {
+          counter-increment: step-counter;
+          margin-bottom: 1em;
+          position: relative;
+          padding-left: 40px;
+        }
+        .process-section li::before {
+          content: counter(step-counter);
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 30px;
+          height: 30px;
+          background-color: var(--accent-color-2);
+          color: var(--text-color);
+          border-radius: 50%;
+          text-align: center;
+          line-height: 30px;
+          font-weight: bold;
+        }
+        .quote {
+          background-color: #f0f0f0;
+          border-left: 5px solid var(--accent-color-1);
+          padding: 15px;
+          margin: 15px 0;
+          font-style: italic;
+        }
+        .testimonial {
+          background-color: #f9f9f9;
+          border-left: 5px solid var(--accent-color-4);
+          padding: 15px;
+          margin: 15px 0;
+          border-radius: 5px;
+        }
+        .testimonial .author {
+          font-weight: bold;
+          color: var(--accent-color-4);
+          margin-top: 10px;
+        }
+        .faq-section dt {
+            font-weight: bold;
+            color: var(--accent-color-3);
+            margin-top: 1em;
+        }
+        .faq-section dd {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+        .mermaid {
+          margin-bottom: 1.5em;
+          text-align: center;
+        }
+        .highlight-box {
+          background: linear-gradient(135deg, #fff, #f0f8ff);
+          border: 2px solid var(--accent-color-2);
+          padding: 20px;
+          margin: 20px 0;
+          border-radius: 10px;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+  <section class="hero-section">
+    <h1>🚀 Git&GitHub完全攻略セミナー</h1>
+    <p><strong>「黒い画面が怖くなくなる」実践的プログラミング学習</strong></p>
+    <p>💡 独学で習得できる体系的なGit・GitHub活用スキルを身につける</p>
+  </section>
+
+  <section class="benefits-section">
+    <h2>🎯 この内容から得られること</h2>
+    <h3>主な学習内容 / トピック</h3>
+    <ul>
+      <li><strong>Git・GitHubの基本概念</strong>と操作方法の理解</li>
+      <li><strong>コマンドライン（黒い画面）</strong>への恐怖心の克服</li>
+      <li><strong>実際に手を動かす</strong>実践的な学習アプローチ</li>
+      <li><strong>「努力と根性のアプリ」</strong>を使った視覚的理解</li>
+      <li><strong>GitHubの状態管理</strong>とワークフローの把握</li>
+    </ul>
+    <h3>💡 具体的にできるようになること / 成果</h3>
+    <ul>
+      <li><strong>GitHubを使ったバージョン管理</strong>が自然にできる</li>
+      <li><strong>プロジェクトの履歴管理</strong>と変更追跡ができる</li>
+      <li><strong>他の開発者との協働</strong>がスムーズになる</li>
+      <li><strong>独学での継続的なスキル向上</strong>が可能になる</li>
+      <li><strong>実用的なアプリケーション開発</strong>の基礎が身につく</li>
+    </ul>
+    <h3>✨ 期待される変化 / ポジティブな影響</h3>
+    <div class="highlight-box">
+      <p><strong>「独学でここまで！？」</strong>と驚かれるレベルの技術習得</p>
+      <p><strong>温かい雰囲気</strong>で学べる安心できる学習環境</p>
+      <p><strong>記憶に残る</strong>楽しくわかりやすい学習体験</p>
+    </div>
+  </section>
+
+  <section class="proof-section">
+    <h2>💬 参加者からの実際の声</h2>
+    
+    <div class="testimonial">
+      <p>"<strong>GitHubの黒い画面が怖くなくなりました！</strong>丁寧な解説ありがとうございます😊"</p>
+      <div class="author">- 女性50代会社員</div>
+    </div>
+
+    <div class="testimonial">
+      <p>"<strong>独学でここまで！？ってなりました。</strong>わかりやすい講座をありがとうございました。"</p>
+      <div class="author">- 男性50代個人事業主</div>
+    </div>
+
+    <div class="testimonial">
+      <p>"<strong>Git & Githubの概念が良くわかりました。</strong> ダイチさんのおっしゃる通り、手を動かし実際に行ってみることの学びが大事だと感じました。"</p>
+      <div class="author">- 男性40代個人事業主</div>
+    </div>
+
+    <div class="testimonial">
+      <p>"<strong>楽しくわかりやすく学べました。記憶に残りそうです</strong>"</p>
+      <div class="author">- 男性40代会社員</div>
+    </div>
+
+    <div class="testimonial">
+      <p>"<strong>努力と根性のアプリで視覚的にGithubの概要が理解できました。</strong> Githubの状態がわかりやすくて理解しやすかったです。"</p>
+      <div class="author">- 男性50代個人事業主</div>
+    </div>
+
+    <pre class="mermaid">
+      graph TD
+          A[不安・恐怖心] --> B[温かい学習環境];
+          B --> C[実践的な手を動かす学習];
+          C --> D[視覚的理解ツール];
+          D --> E[Git・GitHub習得];
+          E --> F[継続的成長];
+          F --> G[技術的自信];
+          
+          style A fill:#ffcccc
+          style G fill:#ccffcc
+          style E fill:#ffffcc
+    </pre>
+  </section>
+
+  <section class="process-section">
+    <h2>➡️ 学習の具体的なプロセス</h2>
+    <h3>実践的ステップ</h3>
+    <ol>
+      <li><strong>基礎概念の理解:</strong> Git・GitHubの仕組みを温かい雰囲気で学習</li>
+      <li><strong>恐怖心の克服:</strong> 「黒い画面」への不安を段階的に解消</li>
+      <li><strong>実践的な操作:</strong> 実際に手を動かしながら体験的に習得</li>
+      <li><strong>視覚的理解:</strong> 「努力と根性のアプリ」でGitHubの状態を確認</li>
+      <li><strong>独立した活用:</strong> 自分のプロジェクトでの実用的な運用</li>
+    </ol>
+    
+    <pre class="mermaid">
+      graph TD
+          Start[学習開始] --> Fear[恐怖心・不安];
+          Fear --> Warm[温かい学習環境];
+          Warm --> Practice[実践的操作];
+          Practice --> Visual[視覚的ツール活用];
+          Visual --> Understand[概念理解];
+          Understand --> Confidence[技術的自信];
+          Confidence --> Independent[独立した活用];
+          Independent --> Growth[継続的成長];
+          
+          style Start fill:#e1f5fe
+          style Growth fill:#e8f5e8
+          style Confidence fill:#fff3e0
+    </pre>
+  </section>
+
+  <section class="faq-section">
+    <h2>❓ よくある疑問点 (Q&A)</h2>
+    <dl>
+      <dt>Q1: プログラミング初心者でも理解できますか？</dt>
+      <dd>A1: はい。<strong>「黒い画面が怖くなくなった」</strong>という感想が多数あるように、初心者にも非常にわかりやすい解説が特徴です。</dd>
+      
+      <dt>Q2: 実際に手を動かす機会はありますか？</dt>
+      <dd>A2: <strong>「手を動かし実際に行ってみることの学びが大事」</strong>という方針で、実践的な学習を重視しています。</dd>
+      
+      <dt>Q3: 学習内容は記憶に残りますか？</dt>
+      <dd>A3: <strong>「楽しくわかりやすく学べました。記憶に残りそうです」</strong>という感想通り、理解しやすく記憶に定着する内容です。</dd>
+      
+      <dt>Q4: 独学での継続は可能ですか？</dt>
+      <dd>A4: <strong>「独学でここまで！？」</strong>というレベルまで到達できる体系的な学習方法を提供しており、自立した学習が可能になります。</dd>
+      
+      <dt>Q5: 学習環境はどのような雰囲気ですか？</dt>
+      <dd>A5: <strong>「あたたかい雰囲気で落ち着いて学習できました」</strong>という感想が示すように、安心して学べる環境が整っています。</dd>
+    </dl>
+  </section>
+
+</div>
+
+</body>
+</html>
