@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第5回 Git & Github入門 リンク集</title>
+    <!-- Font Awesome (アイコン表示用) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e; /* 深い夜空のネイビー */
+            --primary-color: #16213e; /* やや明るいネイビー */
+            --secondary-color: #0f3460; /* アクセントのブルー */
+            --font-color: #e94560; /* アクセントの赤系 */
+            --text-color: #dcdcdc; /* 基本のテキストカラー */
+            --hover-glow: 0 0 15px rgba(233, 69, 96, 0.7);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans JP', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(45deg, var(--bg-color) 0%, #16213e 100%);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--primary-color);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--secondary-color);
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--font-color);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: var(--hover-glow);
+        }
+        
+        h1 .subtitle {
+            font-size: 0.6em;
+            color: var(--text-color);
+            display: block;
+            margin-top: 10px;
+            font-weight: 400;
+        }
+
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .link-list li a {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 20px 25px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .link-list li a:hover,
+        .link-list li a:focus {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            border-color: var(--font-color);
+            color: #fff;
+        }
+        
+        .link-list li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(233, 69, 96, 0.3), transparent);
+            transition: left 0.4s ease;
+        }
+        
+        .link-list li a:hover::before {
+            left: 100%;
+        }
+
+
+        .link-list .icon {
+            font-size: 1.5em;
+            margin-right: 20px;
+            width: 30px; /* アイコンの幅を固定 */
+            text-align: center;
+            color: var(--font-color);
+        }
+
+        /* スマートフォン用のスタイル */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            .container {
+                padding: 20px;
+            }
+            .link-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>
+            第5回・ダイチと学ぶ！あきらパパの「対話で学ぼう！Git & Github入門」（最終回）
+            <span class="subtitle">🔸2025.7.14開催🔸リンク集</span>
+        </h1>
+
+        <ul class="link-list">
+            <li>
+                <a href="git_seminar_overview.html">
+                    <i class="fas fa-chalkboard-teacher icon"></i>
+                    <span>セミナー概要資料</span>
+                </a>
+            </li>
+            <li>
+                <a href="github_actions_visual_guide.html">
+                    <i class="fas fa-project-diagram icon"></i>
+                    <span>GitHub Actions ビジュアルガイド</span>
+                </a>
+            </li>
+            <li>
+                <a href="ci_cd_guide.html">
+                    <i class="fas fa-rocket icon"></i>
+                    <span>CI/CD実践ガイド</span>
+                </a>
+            </li>
+            <li>
+                <a href="git_danger_guide.html">
+                    <i class="fas fa-exclamation-triangle icon"></i>
+                    <span>Gitの少し危険なコマンド集</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>
